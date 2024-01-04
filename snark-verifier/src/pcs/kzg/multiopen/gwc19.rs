@@ -71,10 +71,11 @@ where
             .collect_vec();
         let lhs = f + rhs.iter().zip(z_omegas).map(|(uw, z_omega)| uw.clone() * &z_omega).sum();
 
-        Ok(KzgAccumulator::new(
-            lhs.evaluate(Some(svk.g)),
-            rhs.into_iter().sum::<Msm<_, _>>().evaluate(Some(svk.g)),
-        ))
+        let o_lhs = lhs.evaluate(Some(svk.g));
+        let o_rhs = rhs.into_iter().sum::<Msm<_, _>>().evaluate(Some(svk.g));
+        println!(" === DEBUG (SNARK VERIFIER): GWC accumulator lhs={:?}, rhs={:?}", o_lhs, o_rhs);
+
+        Ok(KzgAccumulator::new(o_lhs, o_rhs))
     }
 }
 

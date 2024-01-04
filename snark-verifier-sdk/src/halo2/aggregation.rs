@@ -141,6 +141,10 @@ where
             } else {
                 snark.protocol.loaded(loader)
             };
+            println!(
+                "Initializing PLONK Protocol object transcript_initial_state={:?}",
+                protocol.transcript_initial_state
+            );
             let preprocessed = protocol
                 .preprocessed
                 .iter()
@@ -333,6 +337,7 @@ impl AggregationCircuit {
         config_params: AggregationConfigParams,
         params: &ParamsKZG<Bn256>,
         snarks: impl IntoIterator<Item = Snark>,
+        // TODO: Explore "preprocessed as witness"
         universality: VerifierUniversality,
     ) -> Self
     where

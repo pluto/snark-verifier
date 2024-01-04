@@ -69,6 +69,11 @@ mod native {
             KzgAccumulator { lhs, rhs }: KzgAccumulator<M::G1Affine, NativeLoader>,
         ) -> Result<(), Error> {
             let terms = [(&lhs, &dk.g2.into()), (&rhs, &(-dk.s_g2).into())];
+
+            println!(
+                " === DEBUG: Performing pairing on lhs={:?}, rhs={:?}, g2={:?}, s_g2={:?}",
+                lhs, rhs, dk.g2, -dk.s_g2
+            );
             bool::from(M::multi_miller_loop(&terms).final_exponentiation().is_identity())
                 .then_some(())
                 .ok_or_else(|| Error::AssertionFailure("e(lhs, g2)·e(rhs, -s_g2) == O".to_string()))

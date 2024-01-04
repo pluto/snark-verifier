@@ -131,9 +131,7 @@ where
     let protocol = compile(
         params,
         vk,
-        Config::kzg()
-            .with_num_instance(num_instance.clone())
-            .with_accumulator_indices(C::accumulator_indices()),
+        Config::kzg().with_num_instance(num_instance.clone()), // .with_accumulator_indices(C::accumulator_indices()),  // Note: incorrect for standard proofs
     );
     // deciding key
     let dk = (params.get_g()[0], params.g2(), params.s_g2()).into();
@@ -148,11 +146,11 @@ where
     PlonkVerifier::<AS>::verify(&dk, &protocol, &instances, &proof).unwrap();
 
     let sol_code = loader.solidity_code();
-    let byte_code = compile_solidity(&sol_code);
     if let Some(path) = path {
         path.parent().and_then(|dir| fs::create_dir_all(dir).ok()).unwrap();
-        fs::write(path, sol_code).unwrap();
+        fs::write(path, sol_code.clone()).unwrap();
     }
+    let byte_code = compile_solidity(&sol_code);
     byte_code
 }
 

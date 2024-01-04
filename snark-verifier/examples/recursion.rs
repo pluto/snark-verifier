@@ -291,6 +291,7 @@ mod application {
     impl Circuit<Fr> for Square {
         type Config = Selector;
         type FloorPlanner = SimpleFloorPlanner;
+        type Params = ();
 
         fn without_witnesses(&self) -> Self {
             Self::default()
@@ -354,6 +355,8 @@ mod recursion {
 
     use super::*;
 
+    use halo2_ecc::{bn254::FpChip, ecc::EcPoint};
+    use snark_verifier::loader::halo2::{EccInstructions, IntegerInstructions};
     type BaseFieldEccChip<'chip> = halo2_ecc::ecc::BaseFieldEccChip<'chip, G1Affine>;
     type Halo2Loader<'chip> = loader::halo2::Halo2Loader<G1Affine, BaseFieldEccChip<'chip>>;
 

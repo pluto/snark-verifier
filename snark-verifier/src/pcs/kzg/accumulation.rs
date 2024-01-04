@@ -160,6 +160,10 @@ where
         for accumulator in instances {
             transcript.common_ec_point(&accumulator.lhs)?;
             transcript.common_ec_point(&accumulator.rhs)?;
+            println!(
+                " === DEBUG (SV): Pre-blind accumulator lhs={:?}, rhs={:?}",
+                accumulator.lhs, accumulator.rhs
+            );
         }
 
         let blind = pk
@@ -171,6 +175,7 @@ where
                 let rhs = (g * s).to_affine();
                 transcript.write_ec_point(lhs)?;
                 transcript.write_ec_point(rhs)?;
+                println!(" === DEBUG (SV): Post-blind accumulator lhs={:?}, rhs={:?}", lhs, rhs);
                 Ok((lhs, rhs))
             })
             .transpose()?;
@@ -193,6 +198,7 @@ where
                 .evaluate(None)
         });
 
+        println!(" === DEBUG (SV): Final accumulator lhs={:?}, rhs={:?}", lhs, rhs);
         Ok(KzgAccumulator::new(lhs, rhs))
     }
 }

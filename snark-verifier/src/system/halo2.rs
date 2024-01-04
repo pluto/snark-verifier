@@ -88,7 +88,6 @@ pub fn compile<'a, C: CurveAffine, P: Params<'a, C>>(
 
     let cs = vk.cs();
     let Config { zk, query_instance, num_proof, num_instance, accumulator_indices } = config;
-
     let k = params.k() as usize;
     let domain = Domain::new(k, root_of_unity(k));
 
@@ -100,7 +99,7 @@ pub fn compile<'a, C: CurveAffine, P: Params<'a, C>>(
         .map(Into::into)
         .collect();
 
-    let polynomials = &Polynomials::new(cs, zk, query_instance, num_instance, num_proof);
+    let polynomials = &Polynomials::new(cs, zk, query_instance, num_instance.clone(), num_proof);
 
     let evaluations = iter::empty()
         .chain((0..num_proof).flat_map(move |t| polynomials.instance_queries(t)))
@@ -126,7 +125,15 @@ pub fn compile<'a, C: CurveAffine, P: Params<'a, C>>(
         .chain(polynomials.random_query())
         .collect();
 
+    // Fetch the correct initial state from the VK
     let transcript_initial_state = transcript_initial_state::<C>(vk);
+
+    println!(
+        "=== DEBUG SVA:compile(): num_instance={:?}, accumulator_indices={:?}, transcript_initial_state={:?}", 
+        num_instance, 
+        accumulator_indices,
+        transcript_initial_state
+    );
 
     let instance_committing_key = query_instance.then(|| {
         instance_committing_key(
@@ -715,6 +722,7 @@ impl<C: CurveAffine> Transcript<C, MockChallenge> for MockTranscript<C::Scalar> 
     }
 }
 
+// Extracted transcript state from VK
 fn transcript_initial_state<C: CurveAffine>(vk: &VerifyingKey<C>) -> C::Scalar {
     let mut transcript = MockTranscript::default();
     vk.hash_into(&mut transcript).unwrap();

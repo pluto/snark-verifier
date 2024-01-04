@@ -73,7 +73,11 @@ where
         let rhs = Msm::base(&proof.w_prime);
         let lhs = f + rhs.clone() * &proof.z_prime;
 
-        Ok(KzgAccumulator::new(lhs.evaluate(Some(svk.g)), rhs.evaluate(Some(svk.g))))
+        let o_lhs = lhs.evaluate(Some(svk.g));
+        let o_rhs = rhs.evaluate(Some(svk.g));
+
+        println!(" === DEBUG: SHPLONK accumulator lhs={:?}, rhs={:?}", o_lhs, o_rhs);
+        Ok(KzgAccumulator::new(o_lhs, o_rhs))
     }
 }
 
