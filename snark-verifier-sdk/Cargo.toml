@@ -58,7 +58,6 @@ default = [
     "loader_halo2",
     "loader_evm",
     "halo2-pse",
-    "halo2-base/halo2-pse",
     "display",
 ]
 display = ["snark-verifier/display", "dep:ark-std"]
